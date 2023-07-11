@@ -73,10 +73,22 @@ class Radar():
         return [r_sat_ijk, v_sat_ijk]
 
 class Track():
-    def __init__(self, state_vector, name:str):
-        self.name = name        #Track name
-        self.R0 = state_vector[0]            #Initial position vector
-        self.V0 = state_vector[1]            #Initial position vector
+    def __init__(self, state_vector, mu, RE, name:str):
+        #Inputs and direct derivatives:
+        self.name = name                    #Object name
+        self.mu = mu                        #Gravitational Parameter (DU^3 / TU^2)
+        self.RE = RE                        #Radius of orbitted body (DU)
+        self.R0 = state_vector[0]           #Initial position vector (DU)
+        self.V0 = state_vector[1]           #Initial velocity vector (DU/TU)
+        self.r0 = self.magnitude(self.R0)   #Initial Radius (DU)
+        self.v0 = self.magnitude(self.V0)   #Initial Speed (DU/TU)
+
+        #Orbital Parameters:
+        #self.H = np.cross(self.R0, self.V0)
+        #self.h = self.magnitude(self.H)
+        self.SME = self.spec_mech_energy()
+
+        #Misc:
         self.wireframe = self.wireframe_earth() #[px, py, pz]
 
     def wireframe_earth(self):
@@ -99,4 +111,12 @@ class Track():
         plt.title('Position and Velocity Vector of Object %s.' %(self.name))
         ax.view_init(azim=0, elev=30)
         plt.show()
+
+    def magnitude(self, vector) ->float:
+        return m.sqrt(sum(pow(element, 2) for element in vector))
+    
+    def spec_mech_energy(self) ->float:
+        return ((self.v0**2 / 2) - (self.mu / self.r0))
+
+#    def orb_parameters(self) ->list:
         

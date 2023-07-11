@@ -24,6 +24,10 @@ import prediction_utility as util
 import math as m
 import numpy as np
 
+#Physical Information
+RE          = 1         #DU - Earth radius (canoncical)
+mu          = 1         #DU^3 / TU^2 - Earth gravitational parameter (canonical)
+
 #Inputs
 lat         = 39.007                #geodetic latitude (degrees)
 long        = -104.883              #longitude in east direction(degrees) (Long w is negative)
@@ -41,20 +45,32 @@ azim_dot    = 0.05                  #degrees/s
 
 #Input - Radar Contact - Skip if inputting r0/v0 directly
 radar = util.Radar(lat, long, height, date_list, time_list)
-state_vector = radar.track_to_state(slant, slant_dot, elev, elev_dot, azim, azim_dot)
-track1 = util.Track(state_vector, "Track1")
-track1.plot_r0v0()
+R0, V0 = radar.track_to_state(slant, slant_dot, elev, elev_dot, azim, azim_dot)
+state_vector = [R0, V0]
+track1 = util.Track(state_vector, mu, RE, "Track1")
+track1.plot_r0v0
 
 #Input - r0/v0 directly
 print("Date/Time: %s / %s / %s ; %s hours" %(date_list[1], date_list[0], date_list[2], radar.UT))
-print("Calculated GMST (hours): ", radar.GMST)
-print("Calculated GMST (degrees): ", ((radar.GMST / 24)*360))
-print("Radar Site Longitude: ", radar.slong)
-print("Radar Site Latitude: ", radar.lat)
-print("Radar Site Position Vector (DU): ", radar.sposition)
-print("Radar Site Velocity Vector (DU/TU): ", radar.svelocity)
+#print("Calculated GMST (hours): ", radar.GMST)
+#print("Calculated GMST (degrees): ", ((radar.GMST / 24)*360))
+#print("Radar Site Longitude: ", radar.slong)
+#print("Radar Site Latitude: ", radar.lat)
+#print("Radar Site Position Vector (DU): ", radar.sposition)
+#print("Radar Site Velocity Vector (DU/TU): ", radar.svelocity)
 print("Satellite Position Vector (DU): ", state_vector[0])
 print("Satellite Velocity Vector (DU/TU): ", state_vector[1])
+print("Satellite Position Vector (2) (DU): ", track1.R0)
+print("Satellite Velocity Vector (2) (DU): ", track1.V0)
+print("Magnitude of R0 (DU): ", track1.r0)
+print("Specific Mechanical Energy:", track1.SME)
+#print("Specific Angular Momentum Vector (H): ", track1.H)
+#print("Specific Angular Momentum (h): ", track1.h)
 
+print(track1.R0)
+print(track1.V0)
 
+print(R0)
+print(V0)
+print(np.cross(R0, V0))
 

@@ -47,10 +47,14 @@ azim_dot    = 0.05                  #degrees/s
 radar = util.Radar(lat, long, height, date_list, time_list)
 R0, V0 = radar.track_to_state(slant, slant_dot, elev, elev_dot, azim, azim_dot)
 state_vector = [R0, V0]
-track1 = util.Track(state_vector, mu, RE, "Track1")
-track1.plot_r0v0
+track1 = util.Track(state_vector, mu, RE, "track1")
 
-#Input - r0/v0 directly
+
+#Input - r0/v0 directly - Remove comment to use
+#state_vector = [R0, V0]
+
+
+#Testing Output
 print("Date/Time: %s / %s / %s ; %s hours" %(date_list[1], date_list[0], date_list[2], radar.UT))
 #print("Calculated GMST (hours): ", radar.GMST)
 #print("Calculated GMST (degrees): ", ((radar.GMST / 24)*360))
@@ -64,13 +68,9 @@ print("Satellite Position Vector (2) (DU): ", track1.R0)
 print("Satellite Velocity Vector (2) (DU): ", track1.V0)
 print("Magnitude of R0 (DU): ", track1.r0)
 print("Specific Mechanical Energy:", track1.SME)
-#print("Specific Angular Momentum Vector (H): ", track1.H)
-#print("Specific Angular Momentum (h): ", track1.h)
+print("Specific Angular Momentum Vector (H): ", track1.H)
+print("Specific Angular Momentum (h): ", track1.h)
+print("Eccentricty: ", track1.e)
+print("Inclination: ", m.degrees(track1.i))
 
-print(track1.R0)
-print(track1.V0)
-
-print(R0)
-print(V0)
-print(np.cross(R0, V0))
-
+track1.plot_r0v0()

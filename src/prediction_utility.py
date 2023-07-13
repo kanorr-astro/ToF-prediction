@@ -70,7 +70,7 @@ class Radar():
         #Generate R,V vectors for tracked satellite
         r_sat_ijk = np.dot(rotation_matrix, rho_vect) + ([RS[0]],[RS[1]],[RS[2]])
         v_sat_ijk = np.dot(rotation_matrix, rho_dot_vect) + ([VS[0]],[VS[1]],[VS[2]])
-        return [r_sat_ijk, v_sat_ijk]
+        return r_sat_ijk, v_sat_ijk
 
 class Track():
     def __init__(self, state_vector, mu, RE, name:str):
@@ -84,9 +84,11 @@ class Track():
         self.v0 = self.magnitude(self.V0)   #Initial Speed (DU/TU)
 
         #Orbital Parameters:
-        #self.H = np.cross(self.R0, self.V0)
-        #self.h = self.magnitude(self.H)
-        self.SME = self.spec_mech_energy()
+        self.H      = np.cross(self.R0, self.V0, axis=0)
+        self.h      = self.magnitude(self.H)
+        self.SME    = self.spec_mech_energy()
+        self.e      = self.e_calc()
+        self.i      = self.i_calc()
 
         #Misc:
         self.wireframe = self.wireframe_earth() #[px, py, pz]
@@ -110,6 +112,12 @@ class Track():
         ax.quiver(self.R0[0],self.R0[1],self.R0[2],self.V0[0],self.V0[1],self.V0[2], color='red')
         plt.title('Position and Velocity Vector of Object %s.' %(self.name))
         ax.view_init(azim=0, elev=30)
+        print("test")
+        plt.show()
+
+    def plot_test(self):
+        x = [2,2]
+        plt.plot(x)
         plt.show()
 
     def magnitude(self, vector) ->float:
@@ -117,6 +125,12 @@ class Track():
     
     def spec_mech_energy(self) ->float:
         return ((self.v0**2 / 2) - (self.mu / self.r0))
+    
+    def e_calc(self) ->float:
+        return m.sqrt(1 + ((2*self.SME*self.magnitude(self.H)**2)/(self.mu**2)))
+    
+    def i_calc(self) ->float:
+        return m.acos(self.H[2] / self.magnitude(self.H))
 
 #    def orb_parameters(self) ->list:
         
